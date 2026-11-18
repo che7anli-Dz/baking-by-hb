@@ -202,6 +202,22 @@
   @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 
 
+  /* decorative add button: big filled gold + with a soft pulse */
+  .mplus{position:absolute;top:8px;inset-inline-end:8px;width:34px;height:34px;border-radius:50%;border:2px solid #F5E9DC;background:linear-gradient(135deg,#F2C14E,#D99A1F);color:#241A14;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;line-height:1;box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 0 3px rgba(232,163,23,.28);animation:plusPulse 2.2s ease-in-out infinite;z-index:3}
+  .mplus:active{transform:scale(.88)}
+  @keyframes plusPulse{0%,100%{box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 0 3px rgba(232,163,23,.28)}50%{box-shadow:0 3px 12px rgba(0,0,0,.5),0 0 0 7px rgba(232,163,23,.12)}}
+  /* photo lightbox */
+  #imgOvl{align-items:center;padding:16px}
+  #imgOvl .imgsheet{position:relative;background:#241A14;border:1px solid rgba(232,163,23,.5);border-radius:18px;max-width:520px;width:100%;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.6)}
+  #imgOvl .imgsheet>img{width:100%;max-height:68vh;object-fit:contain;display:block;background:#0A0F0C}
+  #imgOvl .x{position:absolute;top:10px;inset-inline-end:10px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(0,0,0,.55);color:#fff;font-size:19px;cursor:pointer;line-height:1;z-index:2}
+  .imgcap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px 2px;color:#F5E9DC;font-weight:700;font-size:15px}
+  .imgcap #imgPrice{color:#E8A317;white-space:nowrap}
+  #imgOvl .btn-gold{display:block;margin:12px 14px 16px;width:calc(100% - 28px)}
+  #imgOvl.open .imgsheet{animation:sheetUp .35s ease both}
+  .anim-done #imgOvl.open .imgsheet{animation:none!important;opacity:1!important;transform:none!important}
+
+
   .medit{position:absolute;top:-8px;inset-inline-end:-8px;width:24px;height:24px;border-radius:50%;background:#E8A317;color:#241A14;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;z-index:2;line-height:1}
   .fld textarea{width:100%;border:1px solid #EAD9C8;border-radius:10px;padding:10px;font:inherit;background:#FFFDF9;color:#2E2620}
   .fld input[type=file]{width:100%;font-size:13px}
@@ -273,6 +289,13 @@
   <button type="button" class="btn-gold" id="copyAgainBtn" style="margin-top:12px"><span data-fr="Copier à nouveau" data-ar="نسخ مرة أخرى">Copier à nouveau</span></button>
 </div></div>
 
+<div class="ovl" id="imgOvl"><div class="imgsheet">
+  <button type="button" class="x" data-close>×</button>
+  <img id="imgBig" src="" alt="">
+  <div class="imgcap"><span id="imgName"></span><span id="imgPrice"></span></div>
+  <button type="button" class="btn-gold" id="imgAddBtn">+ <span data-fr="Ajouter à la commande" data-ar="زيد للطلب">Ajouter à la commande</span></button>
+</div></div>
+
 <div class="ovl" id="addOvl"><div class="sheet">
   <button type="button" class="x" data-close>×</button>
   <h3 class="popname" id="addTitle"><span data-fr="Ajouter un plat" data-ar="زيد طبق">Ajouter un plat</span></h3>
@@ -321,9 +344,9 @@ var IMG = {"cake-fourre": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2w
 var LOGO_URI = "data:image/jpeg;base64,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";
 
 var CATS = [
-  {id:"cakes", fr:"Cakes", ar:"كيك"},
-  {id:"sales", fr:"Salés", ar:"مالح"},
   {id:"traditionnels", fr:"Gâteaux traditionnels", ar:"حلويات تقليدية"},
+  {id:"sales", fr:"Salés", ar:"مالح"},
+  {id:"cakes", fr:"Cakes", ar:"كيك"},
   {id:"coffrets", fr:"Coffrets & box", ar:"بوكسات وعلب"}
 ];
 
@@ -474,6 +497,18 @@ function closeOvls(){
   for(var i = 0; i < ovls.length; i++) ovls[i].classList.remove("open");
 }
 /* quick add: one tap = +1, small toast, stay on the page */
+/* photo lightbox: tap a dish photo to see it big */
+function openImg(id){
+  var d = dishById(id); if(!d) return;
+  var im = document.getElementById("imgBig"); if(!im) return;
+  im.src = dishImg(d);
+  document.getElementById("imgName").textContent = dishName(d);
+  document.getElementById("imgPrice").textContent = priceText(d);
+  window._imgDish = id;
+  document.getElementById("imgOvl").classList.add("open");
+}
+document.getElementById("imgAddBtn").addEventListener("click", function(){ if(window._imgDish){ quickAdd(window._imgDish); closeOvls(); } });
+
 function quickAdd(id){
   var d = dishById(id);
   if(!d) return;
@@ -736,6 +771,8 @@ document.getElementById("menuGrid").addEventListener("click", function(e){
   if(del && ownerMode){ e.stopPropagation(); deleteDish(del.getAttribute("data-del")); return; }
   var ed = t.closest ? t.closest("[data-edit]") : null;
   if(ed && ownerMode){ e.stopPropagation(); openEdit(ed.getAttribute("data-edit")); return; }
+  var _c = t.closest ? t.closest(".mcell") : null;
+  if(_c && !ownerMode && t.closest && t.closest(".mthumb")){ openImg(_c.getAttribute("data-id")); return; }
   var cell = t.closest ? t.closest(".mcell") : null;
   if(cell && ownerMode){ e.stopPropagation(); openEdit(cell.getAttribute("data-id")); return; }
   if(cell) quickAdd(cell.getAttribute("data-id"));
