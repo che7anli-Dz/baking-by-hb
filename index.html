@@ -138,7 +138,6 @@
   .cartbar .go{background:#0A0F0C;color:#E8A317;border-radius:99px;padding:5px 12px;font-size:13px;white-space:nowrap}
   .toast{position:fixed;bottom:168px;left:50%;transform:translateX(-50%) translateY(8px);background:#16261D;color:#F2EFE6;border:1px solid #E8A317;border-radius:99px;padding:9px 18px;font-size:14px;font-weight:700;z-index:120;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  .btn-ig-order{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)!important;color:#fff!important}
   .fld{margin-bottom:12px}
   .fld label{display:block;font-size:13.5px;color:#A8B8AC;margin-bottom:5px}
   .fld input,.fld select{width:100%;background:#101B14;border:1px solid #2A3D31;border-radius:10px;color:#F2EFE6;padding:12px;font-size:15px;font-family:inherit}
@@ -251,20 +250,20 @@
 <div class="order">
         <h2><span data-fr="Comment commander ?" data-ar="كيفاش تطلب؟">Comment commander ?</span></h2>
     <ul id="rulesList">
-      <li><span data-fr="Commande par Instagram" data-ar="الطلب عبر إنستغرام">Commande par Instagram</span></li>
+      <li><span data-fr="Commande par WhatsApp" data-ar="الطلب عبر واتساب">Commande par WhatsApp</span></li>
       <li><span data-fr="Sur commande" data-ar="تخدم على الطلب">Sur commande</span></li>
       <li><span data-fr="Minimum 10 pièces par type" data-ar="أقل كمية: 10 حبات من كل نوع">Minimum 10 pièces par type</span></li>
     </ul>
   </div>
 
   <div class="cta">
-    <a class="btn btn-ig-order" id="waBarBtn" href="https://www.instagram.com/sales_sucres_by_hb/">📋 <span data-fr="Commander sur Instagram" data-ar="اطلب عبر إنستغرام">Commander sur Instagram</span></a>
+    <a class="btn btn-wa" id="waBarBtn" href="https://wa.me/213664728516">💬 <span data-fr="Commander sur WhatsApp" data-ar="اطلب عبر واتساب">Commander sur WhatsApp</span></a>
     <a class="btn btn-ig" href="https://www.instagram.com/sales_sucres_by_hb/"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> <span data-fr="Instagram" data-ar="إنستغرام">Instagram</span></a>
   </div>
 
   <footer>
     <b>BAKING BY HB</b><br>
-    <a href="https://www.instagram.com/sales_sucres_by_hb/">@sales_sucres_by_hb</a>
+    WhatsApp : <a href="https://wa.me/213664728516">0664 72 85 16</a> · <a href="https://www.instagram.com/sales_sucres_by_hb/">@sales_sucres_by_hb</a>
   </footer>
 
 </div>
@@ -274,8 +273,8 @@
   <h3 class="popname"><span data-fr="Ma commande" data-ar="طلبي">Ma commande</span></h3>
   <div id="sumLines" style="margin-top:10px"></div>
   <div class="stotal"><span data-fr="Total" data-ar="المجموع">Total</span><span id="sumTotal"></span></div>
-  <p class="snote"><span data-fr="La commande est copiée automatiquement — collez-la dans le message Instagram." data-ar="الطلب يتنسخ أوتوماتيك — الصقو في رسالة إنستغرام.">La commande est copiée automatiquement — collez-la dans le message Instagram.</span></p>
-  <a class="btn-wa2 btn-ig-order" id="waOrderBtn" href="#" target="_blank" rel="noopener">📋 <span data-fr="Commander sur Instagram" data-ar="اطلب عبر إنستغرام">Commander sur Instagram</span></a>
+  <p class="snote"><span data-fr="La commande s'ouvre dans WhatsApp — appuyez sur Envoyer." data-ar="الطلب يتحل في واتساب — اضغط إرسال.">La commande s'ouvre dans WhatsApp — appuyez sur Envoyer.</span></p>
+  <a class="btn-wa2" id="waOrderBtn" href="#" target="_blank" rel="noopener">💬 <span data-fr="Commander sur WhatsApp" data-ar="اطلب عبر واتساب">Commander sur WhatsApp</span></a>
   <button type="button" class="mreset" id="clearCartBtn"><span data-fr="Vider la commande" data-ar="فرّغ الطلب">Vider la commande</span></button>
 </div></div>
 
@@ -285,7 +284,7 @@
   <h3 class="popname"><span data-fr="Commande copiée !" data-ar="تم نسخ طلبك!">Commande copiée !</span></h3>
   <p class="copynote"><span data-fr="Votre commande est copiée — collez-la dans le message Instagram à @sales_sucres_by_hb" data-ar="الطلب راه منسوخ — الصقو في رسالة إنستغرام عند @sales_sucres_by_hb">Votre commande est copiée — collez-la dans le message Instagram à @sales_sucres_by_hb</span></p>
   <pre class="copybox" id="copyBox"></pre>
-  <a class="btn btn-ig-order" id="copyOpenIg" href="https://www.instagram.com/sales_sucres_by_hb/" target="_blank" rel="noopener">📸 <span data-fr="Ouvrir Instagram" data-ar="فتح إنستغرام">Ouvrir Instagram</span></a>
+  <a class="btn btn-wa" id="copyOpenIg" href="https://www.instagram.com/sales_sucres_by_hb/" target="_blank" rel="noopener">📸 <span data-fr="Ouvrir Instagram" data-ar="فتح إنستغرام">Ouvrir Instagram</span></a>
   <button type="button" class="btn-gold" id="copyAgainBtn" style="margin-top:12px"><span data-fr="Copier à nouveau" data-ar="نسخ مرة أخرى">Copier à nouveau</span></button>
 </div></div>
 
@@ -578,22 +577,16 @@ function fallbackCopy(t){
   try{ document.execCommand("copy"); }catch(e){}
   document.body.removeChild(ta);
 }
-function igOrder(){
-  if(cartCount() === 0){ window.open("https://www.instagram.com/sales_sucres_by_hb/", "_blank"); return; }
-  var msg = orderMsg();
-  window._lastOrderMsg = msg;
-  function done(){
-    closeOvls();
-    document.getElementById("copyBox").textContent = msg;
-    document.getElementById("copyOvl").classList.add("open");
+function waOrder(){
+  var url = "https://wa.me/213664728516";
+  if(cartCount()){
+    url += "?text=" + encodeURIComponent(orderMsg());
   }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(msg).then(done, function(){ fallbackCopy(msg); done(); });
-  } else { fallbackCopy(msg); done(); }
+  window.open(url, "_blank");
 }
 function syncWaButtons(){
-  var b1 = document.getElementById("waBarBtn"); if(b1) b1.href = "https://www.instagram.com/sales_sucres_by_hb/";
-  var b2 = document.getElementById("waOrderBtn"); if(b2) b2.href = "https://www.instagram.com/sales_sucres_by_hb/";
+  var b1 = document.getElementById("waBarBtn"); if(b1) b1.href = "https://wa.me/213664728516";
+  var b2 = document.getElementById("waOrderBtn"); if(b2) b2.href = "https://wa.me/213664728516";
 }
 
 function openSummary(){
@@ -809,8 +802,8 @@ for(var ci = 0; ci < closers.length; ci++) closers[ci].addEventListener("click",
 var ovls = document.querySelectorAll(".ovl");
 for(var oi = 0; oi < ovls.length; oi++) ovls[oi].addEventListener("click", function(e){ if(e.target === this) closeOvls(); });
 document.getElementById("langBtn").addEventListener("click", function(){ setTimeout(renderAll, 0); });
-document.getElementById("waBarBtn").addEventListener("click", function(e){ if(cartCount()){ e.preventDefault(); igOrder(); } });
-document.getElementById("waOrderBtn").addEventListener("click", function(e){ e.preventDefault(); igOrder(); });
+document.getElementById("waBarBtn").addEventListener("click", function(e){ if(cartCount()){ e.preventDefault(); waOrder(); } });
+document.getElementById("waOrderBtn").addEventListener("click", function(e){ e.preventDefault(); waOrder(); });
 document.getElementById("copyAgainBtn").addEventListener("click", function(){
   var m = window._lastOrderMsg || orderMsg();
   function ok(){ toast(isAr() ? "تنسخ مرة أخرى ✅" : "Copié à nouveau ✅"); }
