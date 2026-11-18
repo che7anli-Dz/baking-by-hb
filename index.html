@@ -208,7 +208,15 @@
   /* photo lightbox */
   #imgOvl{align-items:center;padding:16px}
   #imgOvl .imgsheet{position:relative;background:#241A14;border:1px solid rgba(232,163,23,.5);border-radius:18px;max-width:520px;width:100%;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.6)}
-  #imgOvl .imgsheet>img{width:100%;max-height:68vh;object-fit:contain;display:block;background:#0A0F0C}
+  .imgwrap{position:relative}
+  .imgwrap>img{width:100%;max-height:68vh;object-fit:contain;display:block;background:#0A0F0C}
+  .imgarrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(0,0,0,.55);color:#fff;font-size:24px;cursor:pointer;line-height:1;z-index:2;display:flex;align-items:center;justify-content:center}
+  #imgPrev{inset-inline-start:10px}
+  #imgNext{inset-inline-end:10px}
+  .imgmeta{display:flex;justify-content:space-between;align-items:center;padding:10px 14px 0}
+  #imgDots .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);display:inline-block;margin:0 3px;cursor:pointer}
+  #imgDots .dot.on{background:#E8A317}
+  #imgCount{color:#C9BBA6;font-size:12.5px;font-weight:700}
   #imgOvl .x{position:absolute;top:10px;inset-inline-end:10px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(0,0,0,.55);color:#fff;font-size:19px;cursor:pointer;line-height:1;z-index:2}
   .imgcap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px 2px;color:#F5E9DC;font-weight:700;font-size:15px}
   .imgcap #imgPrice{color:#E8A317;white-space:nowrap}
@@ -290,8 +298,12 @@
 
 <div class="ovl" id="imgOvl"><div class="imgsheet">
   <button type="button" class="x" data-close>×</button>
-  <img id="imgBig" src="" alt="">
+  <div class="imgwrap"><img id="imgBig" src="" alt="">
+    <button type="button" class="imgarrow" id="imgPrev">‹</button>
+    <button type="button" class="imgarrow" id="imgNext">›</button>
+  </div>
   <div class="imgcap"><span id="imgName"></span><span id="imgPrice"></span></div>
+  <div class="imgmeta" id="imgMeta"><span id="imgDots"></span><span id="imgCount"></span></div>
   <button type="button" class="btn-gold" id="imgAddBtn">+ <span data-fr="Ajouter à la commande" data-ar="زيد للطلب">Ajouter à la commande</span></button>
 </div></div>
 
@@ -308,7 +320,7 @@
       <div class="fld"><label><span data-fr="Nom de la catégorie (arabe)" data-ar="اسم القسم (بالعربية)">Nom de la catégorie (arabe)</span></label><input id="addCatAr" type="text" dir="rtl"></div>
     </div>
     <div class="fld"><label><span data-fr="Ingrédients" data-ar="المكونات">Ingrédients</span></label><textarea id="addDesc" rows="2"></textarea></div>
-    <div class="fld"><label><span data-fr="Photo du plat" data-ar="تصويرة الطبق">Photo du plat</span></label><input id="addPhoto" type="file" accept="image/*"><img id="addPhotoPrev" data-url="" style="display:none;max-width:100%;border-radius:10px;margin-top:8px"><button type="button" class="mreset" id="addPhotoDel" style="display:none;margin-top:8px"><span data-fr="🗑 Supprimer la photo" data-ar="🗑 مسح التصويرة">🗑 Supprimer la photo</span></button></div>
+    <div class="fld"><label><span data-fr="Photos du plat (max 5)" data-ar="تصاور الطبق (حتى 5)">Photos du plat (max 5)</span></label><div id="addPhotos" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div><input id="addPhoto" type="file" accept="image/*"><div id="addPhotoHint" style="font-size:12px;color:#6E5F52;margin-top:6px"></div></div>
     <div class="fld"><label><input id="addActive" type="checkbox" checked> <span data-fr="Visible dans le menu" data-ar="يبان في المنيو">Visible dans le menu</span></label></div>
     <input id="addId" type="hidden" value="">
     <button type="button" class="btn-gold" id="addSave"><span data-fr="Enregistrer le plat" data-ar="سجّل الطبق">Enregistrer le plat</span></button>
@@ -496,17 +508,52 @@ function closeOvls(){
   for(var i = 0; i < ovls.length; i++) ovls[i].classList.remove("open");
 }
 /* quick add: one tap = +1, small toast, stay on the page */
-/* photo lightbox: tap a dish photo to see it big */
+/* photo gallery: tap a dish photo to see it big, then swipe / arrows / dots
+   to see the dish's other photos (the owner can add up to 5 per dish) */
+function dishImgs(d){
+  if(d.imgs && d.imgs.length) return d.imgs.slice();
+  return [dishImg(d)];
+}
+var _galImgs = [], _galIdx = 0;
+function showImg(i){
+  if(!_galImgs.length) return;
+  _galIdx = ((i % _galImgs.length) + _galImgs.length) % _galImgs.length;
+  document.getElementById("imgBig").src = _galImgs[_galIdx];
+  document.getElementById("imgCount").textContent = (_galIdx + 1) + " / " + _galImgs.length;
+  var dots = document.querySelectorAll("#imgDots .dot");
+  for(var k = 0; k < dots.length; k++) dots[k].classList.toggle("on", k === _galIdx);
+  var multi = _galImgs.length > 1;
+  document.getElementById("imgPrev").style.display = multi ? "" : "none";
+  document.getElementById("imgNext").style.display = multi ? "" : "none";
+  document.getElementById("imgMeta").style.display = multi ? "" : "none";
+}
 function openImg(id){
   var d = dishById(id); if(!d) return;
-  var im = document.getElementById("imgBig"); if(!im) return;
-  im.src = dishImg(d);
+  _galImgs = dishImgs(d); _galIdx = 0;
+  var dotsHtml = "";
+  for(var k = 0; k < _galImgs.length; k++) dotsHtml += '<span class="dot' + (k === 0 ? ' on' : '') + '" data-dot="' + k + '"></span>';
+  document.getElementById("imgDots").innerHTML = dotsHtml;
   document.getElementById("imgName").textContent = dishName(d);
   document.getElementById("imgPrice").textContent = priceText(d);
   window._imgDish = id;
+  showImg(0);
   document.getElementById("imgOvl").classList.add("open");
 }
 document.getElementById("imgAddBtn").addEventListener("click", function(){ if(window._imgDish){ quickAdd(window._imgDish); closeOvls(); } });
+document.getElementById("imgPrev").addEventListener("click", function(e){ e.stopPropagation(); showImg(_galIdx - 1); });
+document.getElementById("imgNext").addEventListener("click", function(e){ e.stopPropagation(); showImg(_galIdx + 1); });
+document.getElementById("imgDots").addEventListener("click", function(e){ var dt = e.target.closest ? e.target.closest("[data-dot]") : null; if(dt) showImg(parseInt(dt.getAttribute("data-dot"), 10)); });
+(function(){
+  var startX = null;
+  var im = document.getElementById("imgBig");
+  im.addEventListener("touchstart", function(e){ if(e.touches.length === 1) startX = e.touches[0].clientX; }, {passive:true});
+  im.addEventListener("touchend", function(e){
+    if(startX == null) return;
+    var dx = e.changedTouches[0].clientX - startX; startX = null;
+    if(dx < -40) showImg(_galIdx + 1);
+    else if(dx > 40) showImg(_galIdx - 1);
+  }, {passive:true});
+})();
 
 function quickAdd(id){
   var d = dishById(id);
@@ -630,9 +677,7 @@ function openAdd(){
   document.getElementById("addDesc").value = "";
   document.getElementById("addPrice").value = "";
   document.getElementById("addPhoto").value = "";
-  document.getElementById("addPhotoPrev").style.display = "none";
-  document.getElementById("addPhotoPrev").setAttribute("data-url", "");
-  document.getElementById("addPhotoDel").style.display = "none";
+  _editImgs = []; _editNew = []; renderEditPhotos();
   document.getElementById("addActive").checked = true;
   document.getElementById("addDelete").style.display = "none";
   document.getElementById("addTitle").textContent = isAr() ? "زيد طبق" : "Ajouter un plat";
@@ -649,11 +694,9 @@ function openEdit(id){
   document.getElementById("addPrice").value = (d.price == null ? "" : d.price);
   document.getElementById("addCat").value = d.cat;
   document.getElementById("addActive").checked = (d.active !== false);
-  var prev = document.getElementById("addPhotoPrev");
-  prev.src = dishImg(d);
-  prev.style.display = "block";
-  prev.setAttribute("data-url", d.img || "");
-  document.getElementById("addPhotoDel").style.display = (dishImg(d) !== LOGO_URI) ? "block" : "none";
+  _editImgs = (d.imgs && d.imgs.length) ? d.imgs.slice() : ((d.img && d.img !== "LOGO") ? [d.img] : []);
+  _editNew = [];
+  renderEditPhotos();
   document.getElementById("addDelete").style.display = "block";
   document.getElementById("addTitle").textContent = isAr() ? "عدّل الطبق" : "Modifier le plat";
 }
@@ -675,8 +718,8 @@ function saveDish(){
     if(old) sort = old.sort || 0; else sort = sort + 1;
     var rowId = id || ("d" + Date.now());
     toast(isAr() ? "جارٍ الحفظ…" : "Enregistrement…");
-    var finish = function(imgUrl){
-      var row = {id: rowId, cat:finalCat, fr: fr || ar, ar: ar || fr, ingredients:desc, price:p, img: imgUrl, sort:sort, active: document.getElementById("addActive").checked};
+    var finish = function(imgs){
+      var row = {id: rowId, cat:finalCat, fr: fr || ar, ar: ar || fr, ingredients:desc, price:p, img: (imgs[0] || ""), imgs: imgs, sort:sort, active: document.getElementById("addActive").checked};
       var cr = ownerCreds() || {};
       sb.rpc("hb_upsert_dish", {p_project: cr.project, p_code: cr.code, p_dish: row}).then(function(res){
         if(res.error){ toast("Erreur : " + res.error.message); return; }
@@ -684,28 +727,33 @@ function saveDish(){
         toast(isAr() ? "الطبق تسجّل ✅ — تبدل عند الزبائن أوتوماتيك" : "Plat enregistré ✅ — le menu client se met à jour tout seul");
       });
     };
-    var file = document.getElementById("addPhoto").files[0];
-    if(file){
-      resizePhoto(file, function(blob){
-        // One automatic retry: a photo upload over a mobile connection can
-        // drop once and succeed on the second try — only then show the error.
-        // Each try uses a fresh path (no upsert), so a try that reached the
-        // server but lost its response never blocks the next one.
-        var tries = 0;
-        var doUpload = function(){
-          tries++;
-          var path = rowId + "/" + Date.now() + ".jpg";
-          sb.storage.from("hb-photos").upload(path, blob, {contentType:"image/jpeg"}).then(function(res){
-            if(res.error){
-              if(tries < 2){ setTimeout(doUpload, 1500); return; }
-              toast((isAr() ? "⚠️ التصويرة ما ترفعاتش: " : "⚠️ Photo non envoyée : ") + res.error.message, 8000); return;
-            }
-            finish(sb.storage.from("hb-photos").getPublicUrl(path).data.publicUrl);
-          });
-        };
-        doUpload();
-      });
-    } else finish(document.getElementById("addPhotoPrev").getAttribute("data-url") || "");
+    // Gallery: kept photos stay as-is, staged new ones upload one by one
+    // (each with one automatic retry — a mobile upload can drop once).
+    // Each try uses a fresh path (no upsert), so a try that reached the
+    // server but lost its response never blocks the next one.
+    var staged = _editNew.slice();
+    var kept = _editImgs.slice();
+    if(!staged.length){ finish(kept); return; }
+    toast(isAr() ? "جارٍ رفع التصاور…" : "Envoi des photos…");
+    var uploaded = [];
+    var upOne = function(idx){
+      if(idx >= staged.length){ finish(kept.concat(uploaded)); return; }
+      var tries = 0;
+      var doUpload = function(){
+        tries++;
+        var path = rowId + "/" + Date.now() + "-" + idx + ".jpg";
+        sb.storage.from("hb-photos").upload(path, staged[idx].blob, {contentType:"image/jpeg"}).then(function(res){
+          if(res.error){
+            if(tries < 2){ setTimeout(doUpload, 1500); return; }
+            toast((isAr() ? "⚠️ تصويرة ما ترفعاتش: " : "⚠️ Photo non envoyée : ") + res.error.message, 8000); return;
+          }
+          uploaded.push(sb.storage.from("hb-photos").getPublicUrl(path).data.publicUrl);
+          upOne(idx + 1);
+        });
+      };
+      doUpload();
+    };
+    upOne(0);
   };
   if(cat === "__new__"){
     var catFr = document.getElementById("addCatFr").value.replace(/^\s+|\s+$/g, "");
@@ -858,7 +906,7 @@ renderCartBar();
     if(!rows || !rows.length) return;
     var keep = {};
     DISHES = rows.map(function(r){
-      return {id:r.id, cat:r.cat, fr:r.fr, ar:r.ar, desc:r.ingredients || "", descAr:embeddedDescAr[r.id] || "", price:r.price, img:r.img || "", sort:r.sort || 0, active:r.active !== false};
+      return {id:r.id, cat:r.cat, fr:r.fr, ar:r.ar, desc:r.ingredients || "", descAr:embeddedDescAr[r.id] || "", price:r.price, img:r.img || "", imgs:(r.imgs && r.imgs.length) ? r.imgs : [], sort:r.sort || 0, active:r.active !== false};
     });
     DISHES.forEach(function(d){ keep[d.id] = 1; });
     for(var k in cart){ if(!keep[k] && !BOXES.some(function(b){ return b.id === k; })){ delete cart[k]; } }
@@ -986,26 +1034,48 @@ document.getElementById("setSave").addEventListener("click", function(){
 document.getElementById("addCat").addEventListener("change", function(){
   document.getElementById("addCatNew").style.display = (this.value === "__new__") ? "block" : "none";
 });
-// Live preview: picking a photo shows it in the form immediately,
-// so the owner sees the new photo BEFORE saving (no more "nothing changed").
+/* dish gallery: up to 5 photos per dish. _editImgs = saved photo URLs,
+   _editNew = staged new files ({blob, url} with a local preview URL).
+   The first photo is the cover — the one customers see in the menu. */
+var _editImgs = [], _editNew = [];
+function editPhotos(){ return _editImgs.concat(_editNew.map(function(p){ return p.url; })); }
+function renderEditPhotos(){
+  var box = document.getElementById("addPhotos"); if(!box) return;
+  var all = editPhotos();
+  var html = "";
+  for(var i = 0; i < all.length; i++){
+    html += '<span style="position:relative;display:inline-block"><img src="' + esc(all[i]) + '" style="width:76px;height:76px;object-fit:cover;border-radius:10px;border:1px solid #EAD9C8;display:block">'
+      + '<button type="button" data-photodel="' + i + '" style="position:absolute;top:-7px;inset-inline-end:-7px;width:22px;height:22px;border-radius:50%;background:#C0392B;color:#fff;border:0;font-size:13px;font-weight:800;line-height:1;cursor:pointer">×</button></span>';
+  }
+  box.innerHTML = html;
+  var input = document.getElementById("addPhoto");
+  var hint = document.getElementById("addPhotoHint");
+  var full = all.length >= 5;
+  if(input) input.style.display = full ? "none" : "";
+  if(hint) hint.textContent = full ? (isAr() ? "وصلتي لـ 5 تصاور — مسحي وحدة باش تزيدي" : "5 photos maximum — supprimez-en une pour en ajouter") : (isAr() ? "تقدري تزيدي حتى 5 تصاور للطبق" : "Jusqu'à 5 photos par plat");
+}
+document.getElementById("addPhotos").addEventListener("click", function(e){
+  var b = e.target.closest ? e.target.closest("[data-photodel]") : null;
+  if(!b) return;
+  var i = parseInt(b.getAttribute("data-photodel"), 10);
+  if(i < _editImgs.length) _editImgs.splice(i, 1);
+  else _editNew.splice(i - _editImgs.length, 1);
+  renderEditPhotos();
+});
+// Live preview: picking a photo stages it (resized) and shows it in the
+// form immediately, so the owner sees the new photo BEFORE saving.
 document.getElementById("addPhoto").addEventListener("change", function(){
-  var f = this.files[0];
-  if(!f) return;
-  var prev = document.getElementById("addPhotoPrev");
-  prev.src = URL.createObjectURL(f);
-  prev.style.display = "block";
+  var f = this.files[0]; if(!f) return;
+  this.value = "";
+  if(editPhotos().length >= 5){ toast(isAr() ? "حتى 5 تصاور برك" : "5 photos maximum"); return; }
+  resizePhoto(f, function(blob){
+    _editNew.push({blob: blob, url: URL.createObjectURL(blob)});
+    renderEditPhotos();
+  });
 });
 document.getElementById("addDelete").addEventListener("click", function(){
   var id = document.getElementById("addId").value;
   if(id){ closeOvls(); deleteDish(id); }
-});
-document.getElementById("addPhotoDel").addEventListener("click", function(){
-  var prev = document.getElementById("addPhotoPrev");
-  document.getElementById("addPhoto").value = "";
-  prev.src = LOGO_URI;
-  prev.style.display = "block";
-  prev.setAttribute("data-url", "LOGO");
-  this.style.display = "none";
 });
 document.querySelectorAll("[data-close]").forEach(function(b){ b.addEventListener("click", closeOvls); });
 </script>
